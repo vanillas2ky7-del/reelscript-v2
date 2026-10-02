@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111320">
+  <meta name="description" content="인스타 릴스 링크나 영상 파일에서 한국어 나레이션을 정확하게 추출하세요.">
+  <title>릴스크립트 — 인스타 릴스 나레이션 추출</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="brandmark"><span>▶</span></div><span>REEL<span class="brandaccent">SCRIPT</span></span><span class="version">V2</span></div>
+    <div class="topright"><span class="dot" id="healthDot"></span><span id="healthText">서버 확인 중</span></div>
+  </header>
+
+  <main>
+    <div class="eyebrow"><span class="sparkle">✦</span> CONTENT CREATOR TOOLKIT <span class="subline"></span> HIGH ACCURACY TRANSCRIPTION</div>
+    <section class="hero">
+      <h1>릴스 나레이션,<br><em>텍스트로 한 번에.</em></h1>
+      <p>영상 주소를 붙여넣거나 파일을 올리세요. 말한 내용을 최대한 그대로 듣고, 복사하기 좋은 대본으로 정리합니다.</p>
+      <div class="heroChips"><span><b>✓</b> 추적 파라미터 자동 정리</span><span><b>✓</b> 한국어 고정밀 인식</span><span><b>✓</b> 교정본 · 원문 비교</span></div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel mainPanel" aria-label="나레이션 추출">
+        <div class="panelHeader"><div><div class="tinyIndex">01 / INPUT</div><h2>영상 가져오기</h2></div><span class="pill">REELS → SCRIPT</span></div>
+        <div class="tabs" role="tablist" aria-label="입력 방식">
+          <button class="tab active" id="linkTab" type="button" role="tab" aria-selected="true"><span class="tabIcon">↗</span> 릴스 링크</button>
+          <button class="tab" id="fileTab" type="button" role="tab" aria-selected="false"><span class="tabIcon">⇧</span> 파일 업로드</button>
+        </div>
+        <form id="transcribeForm">
+          <div id="linkPane" class="inputPane">
+            <label class="fieldLabel" for="reelUrl">Instagram Reel URL</label>
+            <div class="linkEntry"><span class="entryIcon">↗</span><input id="reelUrl" name="url" type="text" spellcheck="false" autocomplete="off" placeholder="https://www.instagram.com/reel/Db1f39sTv_K/?stkn=..." aria-describedby="linkHelp"><button id="pasteButton" type="button" class="smallbtn">붙여넣기</button></div>
+            <div class="hint" id="linkHelp">주소 뒤의 <code>?stkn=</code>, <code>?igsh=</code> 같은 문자는 자동으로 제거해요.</div>
+          </div>
+          <div id="filePane" class="inputPane" hidden>
+            <label class="fieldLabel" for="videoFile">Video / Audio File</label>
+            <label id="dropZone" class="dropZone" for="videoFile"><input id="videoFile" name="video" type="file" accept="video/*,audio/*,.mkv,.m4a,.mp3,.wav,.flac,.ogg,.aac"><span class="uploadIcon">⇧</span><strong id="fileName">클릭하거나 파일을 여기에 놓으세요</strong><span class="muted" id="fileMeta">MP4, MOV, WEBM, M4A, MP3 등 · 최대 250MB / 15분</span></label>
+          </div>
+
+          <div class="settingsDivider"></div>
+          <div class="fieldLabel">인식 품질 선택</div>
+          <div class="qualityGrid">
+            <label class="qualityCard selected"><input type="radio" name="mode" value="accurate" checked><span class="qualityTop"><span class="qualityIcon">✦</span><strong>정확도 우선</strong><span class="recommend">추천</span></span><span>원본·노이즈 감소본을 각각 인식하고 두 결과를 비교 교정</span></label>
+            <label class="qualityCard"><input type="radio" name="mode" value="fast"><span class="qualityTop"><span class="qualityIcon">⚡</span><strong>빠르게 추출</strong></span><span>원본 음성을 한 번 인식해 빠르게 대본 추출</span></label>
+          </div>
+          <details class="vocabulary"><summary>특수 단어가 있나요? <span>선택 사항</span></summary><label class="fieldLabel" for="hints">브랜드명 / 제품명 / 전문 용어</label><textarea id="hints" name="hints" rows="2" maxlength="1000" placeholder="예: 자이로스코프, 식기건조대, 폴딩 수납장"></textarea><div class="hint">실제로 말한 단어가 맞게 인식되도록 돕는 참고 정보예요.</div></details>
+          <button class="primaryButton" id="submitButton" type="submit"><span id="submitText">나레이션 추출하기</span><span class="arrow">→</span></button>
+        </form>
+        <div class="status" id="status" role="status" aria-live="polite" hidden>
+          <div class="statusLine"><span class="pulse"></span><strong id="statusLabel">처리 중…</strong><span id="statusPercent">0%</span></div><div class="progressTrack"><div id="progressFill"></div></div><p>잠시 화면을 열어두세요. 정확도 우선은 음성을 두 번 인식합니다.</p>
+        </div>
+        <div class="errorBox" id="errorBox" role="alert" hidden><strong id="errorTitle">처리하지 못했습니다</strong><p id="errorMessage"></p><p id="errorHelp" hidden>인스타그램이 영상을 제한한 경우, 휴대폰에 저장한 영상을 <button type="button" class="textButton" id="switchFile">파일 업로드</button> 탭에서 처리할 수 있어요.</p></div>
+      </section>
+
+      <aside class="sidePanel">
+        <div class="sideEyebrow">THE WORKFLOW</div>
+        <h3>복잡한 과정 없이<br>대본만 깔끔하게.</h3>
+        <div class="howStep"><span class="stepNum">01</span><div><b>링크 또는 영상 입력</b><p>인스타 추적 코드가 붙은 URL도 자동 정리합니다.</p></div></div>
+        <div class="howStep"><span class="stepNum">02</span><div><b>한국어 음성 분석</b><p>정확도 우선은 2회 전사 후 내용 차이를 비교합니다.</p></div></div>
+        <div class="howStep"><span class="stepNum">03</span><div><b>복사하고 바로 사용</b><p>교정된 대본을 수정하고 TXT 파일로 저장하세요.</p></div></div>
+        <div class="asideNotice"><span>ⓘ</span><p>공개 릴스도 인스타그램의 로그인·접근 제한으로 추출에 실패할 수 있어요. 그때는 원본 영상 파일을 사용하세요.</p></div>
+      </aside>
+    </div>
+
+    <section id="resultSection" class="panel resultPanel" hidden>
+      <div class="panelHeader"><div><div class="tinyIndex">02 / OUTPUT</div><h2>추출된 나레이션 대본</h2></div><span class="successPill">✓ 추출 완료</span></div>
+      <div class="resultToolbar"><div><strong id="resultMode">정확도 우선</strong><span class="muted">아래 내용을 자유롭게 수정할 수 있어요.</span></div><div class="toolbarActions"><button class="secondaryButton" id="copyButton" type="button">▢ 복사하기</button><button class="secondaryButton" id="downloadButton" type="button">↓ TXT 저장</button></div></div>
+      <textarea id="resultText" class="resultText" spellcheck="true" aria-label="추출된 대본"></textarea>
+      <div class="resultFoot"><span id="resultCount">0자</span><button class="minimalButton" id="newButton" type="button">↻ 다른 영상 추출하기</button></div>
+      <details class="rawDetails"><summary>교정 전 원문 보기 <span>정확도 비교용</span></summary><p>최종본에서 단어가 잘못 바뀌었다면 원문과 비교해서 확인하세요.</p><pre id="rawText"></pre><div id="secondPass" hidden><strong>노이즈 감소 음성의 전사 결과</strong><pre id="secondText"></pre></div></details>
+    </section>
+  </main>
+  <footer><span>REELSCRIPT <span class="brandaccent">/</span> V2</span><span>Designed for creators · 입력한 영상은 작업 완료 후 서버 임시 폴더에서 삭제됩니다.</span></footer>
+</div>
+<script src="/static/app.js" defer></script>
+</body>
+</html>
